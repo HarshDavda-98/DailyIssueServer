@@ -1,6 +1,7 @@
 const { signUpData } = require("./Schema_model");
 const bcrypt = require("bcrypt");
 const e = require("express");
+const jwt = require("jsonwebtoken");
 
 const GetSignup = async (req, res) => {
   try {
@@ -14,26 +15,11 @@ const GetSignup = async (req, res) => {
 };
 
 const PostSignup = async (req, res) => {
-  const {
-    UserName,
-    EmailAdd,
-    Password,
-    Confirm_Password,
-    Id,
-    LastName,
-    FirstName,
-  } = req.body;
-  const Sign = new signUpData({
-    LastName: LastName,
-    UserName: UserName,
-    EmailAdd: EmailAdd,
-    Password: Password,
-    Confirm_Password: Confirm_Password,
-    Id: Id,
-    FirstName: FirstName,
-  });
-
-  await signUpData.findOne({ EmailAdd: EmailAdd }).then((EmailAdd) => {
+  const {UserName,EmailAdd,Password,Confirm_Password,Id,LastName,FirstName} = req.body;
+  const Sign = new signUpData({LastName: LastName,UserName: UserName,EmailAdd: EmailAdd,Password: Password,Confirm_Password: Confirm_Password,Id: Id,FirstName: FirstName,});
+  
+  
+  const savesogn =  await signUpData.findOne({ EmailAdd: EmailAdd }).then((EmailAdd) => {
     if (EmailAdd) {
       res.status(202).json({
         msg: "Email_already_registered",
@@ -45,6 +31,8 @@ const PostSignup = async (req, res) => {
       });
     }
   });
+  const token = await Sign.generateToken().catch((err)=>{console.log(err)});
+  // console.log(token);
 };
 const GetLogin = (req, res) => {
   res.send("Get the login");
@@ -60,10 +48,10 @@ const PostLogin = async (req, res) => {
     res.status(201).json({ msg: "Successs" });
   }
 };
-const Signout = async(req, res) => {
+const Signout = async (req, res) => {
   if (signUpData) {
-  let signout =  await signUpData.findOneAndDelete(req.params.Id);
-    res.status(201).json({msg:"success",signout});
+    let signout = await signUpData.findOneAndDelete(req.params.Id);
+    res.status(201).json({ msg: "success", signout });
   }
 };
 
