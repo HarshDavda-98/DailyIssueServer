@@ -19,7 +19,8 @@ const PostSignup = async (req, res) => {
   const Sign = new signUpData({LastName: LastName,UserName: UserName,EmailAdd: EmailAdd,Password: Password,Confirm_Password: Confirm_Password,Id: Id,FirstName: FirstName,});
   
   
-  const savesogn =  await signUpData.findOne({ EmailAdd: EmailAdd }).then((EmailAdd) => {
+  const token = await Sign.generateToken().catch((err)=>{console.log(err)});
+    await signUpData.findOne({ EmailAdd: EmailAdd }).then((EmailAdd) => {
     if (EmailAdd) {
       res.status(202).json({
         msg: "Email_already_registered",
@@ -31,7 +32,6 @@ const PostSignup = async (req, res) => {
       });
     }
   });
-  const token = await Sign.generateToken().catch((err)=>{console.log(err)});
   // console.log(token);
 };
 const GetLogin = (req, res) => {
